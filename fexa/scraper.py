@@ -29,7 +29,6 @@ def click_login(driver):
     except:
         print("Retrying")
         time.sleep(1)
-        click_login(driver)
 
 
 configs = {
@@ -55,7 +54,7 @@ def scrape_work_order(driver,wait_allowed,downloads_folder,facility_name):
     number_of_work_orders = int(driver.find_element(By.XPATH,
                                                     "/html/body/div[5]/div[2]/div/div[1]/div/div[2]/div/div[2]/div[2]/div/div[2]/div/div/div/div/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div/div[1]/div/div/div/div/div[1]/div").text)
     print(number_of_work_orders)
-    time.sleep(5)
+    time.sleep(1)
     while True:
         if counter == number_of_work_orders: break
         for i in range(1, 30):
@@ -229,7 +228,7 @@ def scraper():
 
             click_login(driver)
 
-            time.sleep(10)
+            time.sleep(1)
             data_to_return[facility_name] = {}
             print(f"{facility_name}//work_orders")
             driver.get(facility_info['url'].split("#")[0] + "#workorders")
