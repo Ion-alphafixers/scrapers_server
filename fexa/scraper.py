@@ -58,13 +58,27 @@ def scrape_work_order(driver,wait_allowed,downloads_folder,facility_name):
     time.sleep(5)
     while True:
         if counter == number_of_work_orders: break
-        for i in range(1, 37):
-            if counter == number_of_work_orders: break
-            counter += 1
-            curr_element = driver.find_element(By.XPATH,
-                                               f"/html/body/div[5]/div[2]/div/div[1]/div/div[2]/div/div[2]/div[2]/div/div[2]/div/div/div/div/div[1]/div[3]/div[2]/div[2]/div[{i}]")
-            all_child_divs.append(curr_element.text)
-            driver.execute_script("arguments[0].scrollIntoView();", curr_element)
+        for i in range(1, 30):
+            try:
+                if counter == number_of_work_orders: break
+                curr_element = driver.find_element(By.XPATH,
+                                                   f"/html/body/div[5]/div[2]/div/div[1]/div/div[2]/div/div[2]/div[2]/div/div[2]/div/div/div/div/div[1]/div[3]/div[2]/div[2]/div[{i}]")
+                print(counter)
+                all_child_divs.append(curr_element.text)
+                driver.execute_script("arguments[0].scrollIntoView();", curr_element)
+                counter += 1
+            except:
+                scroll_distance = 100
+                driver.execute_script(f"window.scrollBy(0, {scroll_distance});")
+                # dummy_wait = WebDriverWait(driver, wait_allowed).until(EC.presence_of_element_located((By.XPATH,
+                #                                                                                        f"/html/body/div[5]/div[2]/div/div[1]/div/div[2]/div/div[2]/div[2]/div/div[2]/div/div/div/div/div[1]/div[3]/div[2]/div[2]/div[{i}]")))
+                if counter == number_of_work_orders: break
+                counter += 1
+                curr_element = driver.find_element(By.XPATH,
+                                                   f"/html/body/div[5]/div[2]/div/div[1]/div/div[2]/div/div[2]/div[2]/div/div[2]/div/div/div/div/div[1]/div[3]/div[2]/div[2]/div[{i}]")
+                print("ELEMENT")
+                all_child_divs.append(curr_element.text)
+                driver.execute_script("arguments[0].scrollIntoView();", curr_element)
     rows = []
     for row in all_child_divs:
         curr_row = row.split('\n')
@@ -100,9 +114,10 @@ def scrape_invoices(driver,wait_allowed,downloads_folder,facility_name):
 
     while True:
         if counter == number_of_invoices: break
-        for i in range(1, 37):
+        for i in range(1, 30):
             if counter == number_of_invoices: break
             counter += 1
+            print(counter)
             curr_element = driver.find_element(By.XPATH,
                                                f"/html/body/div[5]/div[2]/div/div[1]/div/div[2]/div/div[2]/div[4]/div/div[2]/div/div/div/div/div[1]/div[3]/div[2]/div[2]/div[{i}]")
             all_child_divs.append(curr_element.text)
@@ -138,9 +153,10 @@ def scrape_proposals(driver,wait_allowed,downloads_folder,facility_name):
 
     while True:
         if counter == number_of_invoices: break
-        for i in range(1, 37):
+        for i in range(1, 30):
             if counter == number_of_invoices: break
             counter += 1
+            print(counter)
             curr_element = driver.find_element(By.XPATH,
                                                f"/html/body/div[5]/div[2]/div/div[1]/div/div[2]/div/div[2]/div[8]/div/div[2]/div/div/div/div/div[1]/div[3]/div[2]/div[2]/div[{i}]")
             all_child_divs.append(curr_element.text)
