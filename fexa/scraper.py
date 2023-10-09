@@ -207,37 +207,45 @@ def convert_scraping_results_to_zip(results) -> zipfile.ZipFile:
                     zip_f.writestr(zip_path, pd.DataFrame(report_type_data).to_csv(index=False))
 
     return zip_buffer
+
+
 def scraper():
-    driver = webdriver.Chrome(options = options)
-    home_directory = os.path.expanduser("~")
-    downloads_folder = os.path.join(home_directory, "Downloads")
-    wait_allowed = 500
-    data_to_return={}
-    for facility_name, facility_info in configs.items():
+    driver = webdriver.Chrome(options=options)
+    try:
+        home_directory = os.path.expanduser("~")
+        downloads_folder = os.path.join(home_directory, "Downloads")
+        wait_allowed = 500
+        data_to_return = {}
+        for facility_name, facility_info in configs.items():
+            driver.get(facility_info['url'])
+
+            email_element = WebDriverWait(driver, 500).until(EC.presence_of_element_located((By.ID, 'ext-element-16')))
+            email_element.click()
+            email_element.send_keys(facility_info['email'])
+
+            password_element = driver.find_element(By.ID, "ext-element-29")
+            password_element.click()
+            password_element.send_keys(facility_info['password'])
+
+            click_login(driver)
+
+            time.sleep(10)
+            data_to_return[facility_name] = {}
+            print(f"{facility_name}//work_orders")
+            driver.get(facility_info['url'].split("#")[0] + "#workorders")
+            data_to_return[facility_name]['work_orders'] = scrape_work_order(driver, wait_allowed, downloads_folder,
+                                                                             facility_name)
+            print(f"{facility_name}//invoices")
+            driver.get(facility_info['url'].split("#")[0] + "#invoices")
+            data_to_return[facility_name]['invoices'] = scrape_invoices(driver, wait_allowed, downloads_folder,
+                                                                        facility_name)
+            print(f"{facility_name}//proposals")
+            driver.get(facility_info['url'].split("#")[0] + "#subcontractorquotes")
+            data_to_return[facility_name]['proposals'] = scrape_proposals(driver, wait_allowed, downloads_folder,
+                                                                          facility_name)
+        zipped_data = convert_scraping_results_to_zip(data_to_return)
+        return zipped_data
+    finally:
+        driver.quit()  # Make sure to quit the WebDriver to release resources
 
 
-        driver.get(facility_info['url'])
-
-        email_element = WebDriverWait(driver, 500).until(EC.presence_of_element_located((By.ID, 'ext-element-16')))
-        email_element.click()
-        email_element.send_keys(facility_info['email'])
-
-        password_element = driver.find_element(By.ID, "ext-element-29")
-        password_element.click()
-        password_element.send_keys(facility_info['password'])
-
-        click_login(driver)
-
-        time.sleep(10)
-        data_to_return[facility_name] = {}
-        print(f"{facility_name}//work_orders")
-        driver.get(facility_info['url'].split("#")[0] + "#workorders")
-        data_to_return[facility_name]['work_orders'] = scrape_work_order(driver, wait_allowed, downloads_folder, facility_name)
-        print(f"{facility_name}//invoices")
-        driver.get(facility_info['url'].split("#")[0] + "#invoices")
-        data_to_return[facility_name]['invoices'] = scrape_invoices(driver, wait_allowed, downloads_folder, facility_name)
-        print(f"{facility_name}//proposals")
-        driver.get(facility_info['url'].split("#")[0] + "#subcontractorquotes")
-        data_to_return[facility_name]['proposals'] = scrape_proposals(driver, wait_allowed, downloads_folder, facility_name)
-    zipped_data = convert_scraping_results_to_zip(data_to_return)
-    return zipped_data
