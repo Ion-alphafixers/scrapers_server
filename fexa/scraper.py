@@ -74,6 +74,8 @@ def scrape_work_order(driver,wait_allowed,downloads_folder,facility_name):
                 #                                                                                        f"/html/body/div[5]/div[2]/div/div[1]/div/div[2]/div/div[2]/div[2]/div/div[2]/div/div/div/div/div[1]/div[3]/div[2]/div[2]/div[{i}]")))
                 if counter == number_of_work_orders: break
                 counter += 1
+                print(counter)
+
                 curr_element = driver.find_element(By.XPATH,
                                                    f"/html/body/div[5]/div[2]/div/div[1]/div/div[2]/div/div[2]/div[2]/div/div[2]/div/div/div/div/div[1]/div[3]/div[2]/div[2]/div[{i}]")
                 print("ELEMENT")
@@ -109,15 +111,18 @@ def scrape_invoices(driver,wait_allowed,downloads_folder,facility_name):
     headers = driver.find_element(By.XPATH,
                                   "/html/body/div[5]/div[2]/div/div[1]/div/div[2]/div/div[2]/div[4]/div/div[2]/div/div/div/div/div[1]/div[2]/div").text.split(
         "\n")[:-1]
+    if len(headers)!=18:
+        headers = [' ID', 'Work Order ID', 'Billing Company Name', 'Location', 'Reference Number', 'City', 'State', 'GL Code', 'Status', 'Assignment Status', 'Workorder Status', 'Transaction Date', 'Due Date',"Approved Date", "Total","Balance Due","Pending Approval","Discount Total"]
     number_of_invoices = int(driver.find_element(By.XPATH,
                                                  "/html/body/div[5]/div[2]/div/div[1]/div/div[2]/div/div[2]/div[4]/div/div[2]/div/div/div/div/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div/div[1]/div/div/div/div/div[1]/div").text)
-
+    print(number_of_invoices)
     while True:
         if counter == number_of_invoices: break
         for i in range(1, 30):
             if counter == number_of_invoices: break
             counter += 1
             print(counter)
+
             curr_element = driver.find_element(By.XPATH,
                                                f"/html/body/div[5]/div[2]/div/div[1]/div/div[2]/div/div[2]/div[4]/div/div[2]/div/div/div/div/div[1]/div[3]/div[2]/div[2]/div[{i}]")
             all_child_divs.append(curr_element.text)
@@ -150,7 +155,7 @@ def scrape_proposals(driver,wait_allowed,downloads_folder,facility_name):
         "\n")[:-1]
     number_of_invoices = int(driver.find_element(By.XPATH,
                                                  "/html/body/div[5]/div[2]/div/div[1]/div/div[2]/div/div[2]/div[8]/div/div[2]/div/div/div/div/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div/div[1]/div/div/div/div/div[1]/div").text)
-
+    print(number_of_invoices)
     while True:
         if counter == number_of_invoices: break
         for i in range(1, 30):
@@ -176,7 +181,9 @@ def scrape_proposals(driver,wait_allowed,downloads_folder,facility_name):
             else:
                 curr_div.append(col.strip())
         rows.append(curr_div)
-    df = pd.DataFrame(rows, columns=headers+['Pending Approval',""])
+    if len(headers) != 17:
+        headers = [' ID', 'Work Order ID', 'Billing Company Name', 'Location', 'Proposal Number', 'City', 'State', 'Status', 'Assignment Status', 'Workorder Status', 'Transaction Date', 'Due Date', 'Approved Date',"Total","Balance Due","Pending Approval",""]
+    df = pd.DataFrame(rows, columns=headers)
     return df
 def get_side_bar_options(driver):
     side_bar_options = driver.find_elements(By.ID, "ext-element-112")
@@ -232,5 +239,5 @@ def scraper():
         print(f"{facility_name}//proposals")
         driver.get(facility_info['url'].split("#")[0] + "#subcontractorquotes")
         data_to_return[facility_name]['proposals'] = scrape_proposals(driver, wait_allowed, downloads_folder, facility_name)
-        zipped_data = convert_scraping_results_to_zip(data_to_return)
-        return zipped_data
+    zipped_data = convert_scraping_results_to_zip(data_to_return)
+    return zipped_data
