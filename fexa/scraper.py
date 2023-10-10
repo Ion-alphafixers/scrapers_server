@@ -18,6 +18,11 @@ options.add_argument("--no-sandbox")
 options.add_argument("enable-automation")
 options.add_argument("--disable-infobars")
 options.add_argument("--disable-dev-shm-usage")
+options.add_argument("--single-process")
+options.add_argument("--no-zygote")
+options.add_argument("--no-first-run")
+options.add_argument("--disable-accelerated-2d-canvas")
+options.add_argument("--disable-setuid-sandbox")
 
 
 
@@ -29,6 +34,7 @@ def click_login(driver):
     except:
         print("Retrying")
         time.sleep(1)
+        click_login(driver)
 
 
 configs = {
@@ -54,7 +60,7 @@ def scrape_work_order(driver,wait_allowed,downloads_folder,facility_name):
     number_of_work_orders = int(driver.find_element(By.XPATH,
                                                     "/html/body/div[5]/div[2]/div/div[1]/div/div[2]/div/div[2]/div[2]/div/div[2]/div/div/div/div/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div/div[1]/div/div/div/div/div[1]/div").text)
     print(number_of_work_orders)
-    time.sleep(1)
+    time.sleep(5)
     while True:
         if counter == number_of_work_orders: break
         for i in range(1, 30):
@@ -228,7 +234,7 @@ def scraper():
 
             click_login(driver)
 
-            time.sleep(1)
+            time.sleep(10)
             data_to_return[facility_name] = {}
             print(f"{facility_name}//work_orders")
             driver.get(facility_info['url'].split("#")[0] + "#workorders")
@@ -248,3 +254,4 @@ def scraper():
         driver.quit()  # Make sure to quit the WebDriver to release resources
 
 
+scraper()
