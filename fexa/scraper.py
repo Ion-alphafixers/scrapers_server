@@ -12,17 +12,12 @@ from selenium.webdriver.chrome.options import Options
 
 
 options = Options()
-options.add_argument("--headless")
+# options.add_argument("--headless")
 options.add_argument("--disable-gpu")
 options.add_argument("--no-sandbox")
 options.add_argument("enable-automation")
 options.add_argument("--disable-infobars")
 options.add_argument("--disable-dev-shm-usage")
-options.add_argument("--single-process")
-options.add_argument("--no-zygote")
-options.add_argument("--no-first-run")
-options.add_argument("--disable-accelerated-2d-canvas")
-options.add_argument("--disable-setuid-sandbox")
 
 
 
@@ -254,4 +249,8 @@ def scraper():
         driver.quit()  # Make sure to quit the WebDriver to release resources
 
 
-scraper()
+import time
+
+
+driver = webdriver.Chrome(options=options)
+driver.get(url='https://www.google.com')
