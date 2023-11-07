@@ -9,7 +9,7 @@ app = FastAPI()
 
 
 @app.get("/fexa")
-async def fexa_scraper():
+async def fexa():
     print("TEST")
     return StreamingResponse(
         iter([scraper().getvalue()]),
@@ -18,7 +18,7 @@ async def fexa_scraper():
     )
 
 @app.get("/altline")
-async def fexa_scraper():
+async def altline():
     print("TEST")
     return StreamingResponse(
         iter([altline_scraper().getvalue()]),
@@ -28,4 +28,4 @@ async def fexa_scraper():
 
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="127.0.0.1", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=8000)
