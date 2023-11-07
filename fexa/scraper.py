@@ -12,7 +12,7 @@ from selenium.webdriver.chrome.options import Options
 
 
 options = Options()
-# options.add_argument("--headless")
+options.add_argument("--headless")
 options.add_argument("--disable-gpu")
 options.add_argument("--no-sandbox")
 options.add_argument("enable-automation")
@@ -248,9 +248,3 @@ def scraper():
     finally:
         driver.quit()  # Make sure to quit the WebDriver to release resources
 
-
-import time
-
-
-driver = webdriver.Chrome(options=options)
-driver.get(url='https://www.google.com')

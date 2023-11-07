@@ -10,6 +10,19 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium import webdriver
 import time
+
+from selenium.webdriver.chrome.options import Options
+
+
+options = Options()
+options.add_argument("--headless")
+options.add_argument("--disable-gpu")
+options.add_argument("--no-sandbox")
+options.add_argument("enable-automation")
+options.add_argument("--disable-infobars")
+options.add_argument("--disable-dev-shm-usage")
+
+
 very_long_wait = 5
 long_wait = 3
 medium_wait = 2
@@ -25,7 +38,7 @@ def convert_scraping_results_to_zip(results) -> zipfile.ZipFile:
 
     return zip_buffer
 def scraper():
-    chrome_options = webdriver.ChromeOptions()
+    chrome_options = webdriver.ChromeOptions(options=options)
     chrome_options.add_argument("--start-maximized")  # This maximizes the browser window
     driver = webdriver.Chrome(options=chrome_options)
     print(1)
