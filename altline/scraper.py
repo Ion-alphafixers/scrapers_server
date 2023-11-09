@@ -12,18 +12,19 @@ from selenium import webdriver
 import time
 
 chrome_options = webdriver.ChromeOptions()
-chrome_options.add_argument("--start-maximized")
+chrome_options.add_argument("--window-size=1850x1000")
 chrome_options.add_argument("--headless")
 chrome_options.add_argument("--disable-gpu")
 chrome_options.add_argument("--no-sandbox")
 chrome_options.add_argument("enable-automation")
 chrome_options.add_argument("--disable-infobars")
 chrome_options.add_argument("--disable-dev-shm-usage")
+chrome_options.add_argument("--user-agent")
 
-very_long_wait = 5
-long_wait = 3
-medium_wait = 2
-short_wait = 1
+very_long_wait = 25
+long_wait = 8
+medium_wait = 5
+short_wait = 2
 def convert_scraping_results_to_zip(results) -> zipfile.ZipFile:
     zip_buffer = io.BytesIO()
 
@@ -38,8 +39,12 @@ def scraper():
 
     # This maximizes the browser window
     driver = webdriver.Chrome(options=chrome_options)
+    driver.set_window_size(1850, 1000)
+    wait = WebDriverWait(driver, 5000)
+
     print(1)
     driver.get('https://sobanco.profitstars.com/MicrosoftIdentity/Account/SignIn')
+    print("Navigated to sign in screen")
     driver.implicitly_wait(30)
 
     emailInput = driver.find_element(By.ID, "email")
@@ -47,14 +52,14 @@ def scraper():
     passwordInput = driver.find_element(By.ID, "password")
     passwordInput.send_keys('Alpha12#')
     driver.execute_script("document.getElementById('next').click()")
-    print(1)
-    time.sleep(very_long_wait)
-
-    wait = WebDriverWait(driver, 5000)
-    Input = wait.until(EC.presence_of_element_located((By.LINK_TEXT, "Payments")))
-    print("Payments")
-    Input.click()
+    print(f"Authenticated! Waiting for {very_long_wait} seconds")
     time.sleep(medium_wait)
+    payments_section = driver.find_element(By.XPATH,"/html/body/app/div[1]/div[2]/nav/div/a[10]").click()
+    print("Payments")
+    # Input.click()
+    time.sleep(long_wait)
+    payments_section = driver.find_element(By.XPATH, "/html/body/app/div[1]/div[2]/nav/div/a[10]").click()
+    time.sleep(long_wait)
     searchInput = driver.find_element(By.XPATH,
                                       "/html/body/app/div[2]/div[3]/div[3]/div/div/div/form/div[6]/div/div[1]/button")
     searchInput.click()
@@ -72,7 +77,9 @@ def scraper():
             driver.execute_script("arguments[0].scrollIntoView();", row)
             if len(columns) >= 3:
                 for i in range(4):
+
                     print(f"Column {i + 1}: {columns[i + 1].text}")
+
                 debtor = columns[1].text
                 posted_date = columns[2].text
                 check_date = columns[3].text
@@ -110,12 +117,19 @@ def scraper():
             break
         nextBtn.click()
     time.sleep(medium_wait)
+    # print(driver.get_screenshot_as_base64())
     Input = wait.until(EC.presence_of_element_located((By.LINK_TEXT, "Invoices")))
     Input.click()
+    # invoices_section = driver.find_element(By.XPATH,"/html/body/app/div[1]/div[2]/nav/div/a[10]").click()
+
     time.sleep(long_wait)
+    print(111111111111111111111111111111111111111111111)
+    print(driver.get_screenshot_as_base64())
     searchInput = driver.find_element(By.XPATH,
                                       "/html/body/app/div[2]/div[3]/div[3]/div/div/div/form/div[10]/div/div[1]/button")
     searchInput.click()
+    time.sleep(medium_wait)
+    print(driver.get_screenshot_as_base64())
     print("Invoices")
     df1 = pd.DataFrame()
     while True:
@@ -177,4 +191,4 @@ def scraper():
     zipped_data = convert_scraping_results_to_zip(data)
     return zipped_data
 
-
+scraper()
