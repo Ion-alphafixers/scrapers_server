@@ -185,5 +185,3 @@ def scraper():
     }
     zipped_data = convert_scraping_results_to_zip(data)
     return zipped_data
-
-scraper()
