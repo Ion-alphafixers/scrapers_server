@@ -13,7 +13,7 @@ import time
 
 chrome_options = webdriver.ChromeOptions()
 chrome_options.add_argument("--window-size=1850x1000")
-chrome_options.add_argument("--headless")
+# chrome_options.add_argument("--headless")
 chrome_options.add_argument("--disable-gpu")
 chrome_options.add_argument("--no-sandbox")
 chrome_options.add_argument("enable-automation")
@@ -53,13 +53,12 @@ def scraper():
     passwordInput.send_keys('Alpha12#')
     driver.execute_script("document.getElementById('next').click()")
     print(f"Authenticated! Waiting for {very_long_wait} seconds")
-    time.sleep(medium_wait)
+    time.sleep(very_long_wait)
     payments_section = driver.find_element(By.XPATH,"/html/body/app/div[1]/div[2]/nav/div/a[10]").click()
     print("Payments")
     # Input.click()
-    time.sleep(long_wait)
-    payments_section = driver.find_element(By.XPATH, "/html/body/app/div[1]/div[2]/nav/div/a[10]").click()
-    time.sleep(long_wait)
+    time.sleep(medium_wait)
+
     searchInput = driver.find_element(By.XPATH,
                                       "/html/body/app/div[2]/div[3]/div[3]/div/div/div/form/div[6]/div/div[1]/button")
     searchInput.click()
