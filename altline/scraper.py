@@ -13,7 +13,7 @@ import time
 
 chrome_options = webdriver.ChromeOptions()
 chrome_options.add_argument("--window-size=1850x1000")
-# chrome_options.add_argument("--headless")
+chrome_options.add_argument("--headless")
 chrome_options.add_argument("--disable-gpu")
 chrome_options.add_argument("--no-sandbox")
 chrome_options.add_argument("enable-automation")
@@ -21,10 +21,10 @@ chrome_options.add_argument("--disable-infobars")
 chrome_options.add_argument("--disable-dev-shm-usage")
 chrome_options.add_argument("--user-agent")
 
-very_long_wait = 25
-long_wait = 8
-medium_wait = 5
-short_wait = 2
+very_long_wait = 7
+long_wait = 2
+medium_wait = 1
+short_wait = 0.5
 def convert_scraping_results_to_zip(results) -> zipfile.ZipFile:
     zip_buffer = io.BytesIO()
 
@@ -105,10 +105,10 @@ def scraper():
                 backArrow = driver.find_element(By.XPATH,
                                                 "/html/body/app/div[2]/div[3]/div[5]/div/header/div/div/button")
                 backArrow.click()
-        sub_headers = ['INV #', 'PO#', 'INV', 'DATE', 'AMOUNT', 'BALANCE', 'PAYMENT', 'ESCROW', 'FEE', 'DAYS',
-                       'FEE', 'EARNED']
+        sub_headers = []
         sub_df = pd.DataFrame(data=all_rows,
-                              columns=['Debtor', 'Posted Date', 'Check Date', 'Check Number'].extend(sub_headers))
+                              columns=['Debtor', 'Posted Date', 'Check Date', 'Check Number' , 'INV #', 'PO#', 'INV', 'DATE', 'AMOUNT', 'BALANCE', 'PAYMENT', 'ESCROW', 'FEE', 'DAYS',
+                       'FEE', 'EARNED'].extend(sub_headers))
         df = pd.concat([df, sub_df])
         time.sleep(long_wait)
         nextBtn = driver.find_element(By.LINK_TEXT, "Next")
@@ -116,19 +116,15 @@ def scraper():
             break
         nextBtn.click()
     time.sleep(medium_wait)
-    # print(driver.get_screenshot_as_base64())
     Input = wait.until(EC.presence_of_element_located((By.LINK_TEXT, "Invoices")))
     Input.click()
-    # invoices_section = driver.find_element(By.XPATH,"/html/body/app/div[1]/div[2]/nav/div/a[10]").click()
 
     time.sleep(long_wait)
-    print(111111111111111111111111111111111111111111111)
-    print(driver.get_screenshot_as_base64())
+
     searchInput = driver.find_element(By.XPATH,
                                       "/html/body/app/div[2]/div[3]/div[3]/div/div/div/form/div[10]/div/div[1]/button")
     searchInput.click()
     time.sleep(medium_wait)
-    print(driver.get_screenshot_as_base64())
     print("Invoices")
     df1 = pd.DataFrame()
     while True:
