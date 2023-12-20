@@ -13,7 +13,7 @@ import time
 
 chrome_options = webdriver.ChromeOptions()
 chrome_options.add_argument("--window-size=1850x1000")
-chrome_options.add_argument("--headless")
+# chrome_options.add_argument("--headless")
 chrome_options.add_argument("--disable-gpu")
 chrome_options.add_argument("--no-sandbox")
 chrome_options.add_argument("enable-automation")
@@ -21,10 +21,10 @@ chrome_options.add_argument("--disable-infobars")
 chrome_options.add_argument("--disable-dev-shm-usage")
 chrome_options.add_argument("--user-agent")
 
-very_long_wait = 7
-long_wait = 2
-medium_wait = 1
-short_wait = 0.5
+very_long_wait = 25
+long_wait = 8
+medium_wait = 5
+short_wait = 2
 def convert_scraping_results_to_zip(results) -> zipfile.ZipFile:
     zip_buffer = io.BytesIO()
 
@@ -66,12 +66,16 @@ def scraper():
     time.sleep(short_wait)
 
     df = pd.DataFrame()
+    set_disabled = False
     while True:
         table = driver.find_element(By.ID, "pmtList")
         rows = table.find_elements(By.TAG_NAME, ("tr"))
         all_rows = []
         for index, row in enumerate(rows):
             print(index)
+            if index == 5:
+                set_disabled = True
+                break
             columns = row.find_elements(By.TAG_NAME, "td")
             driver.execute_script("arguments[0].scrollIntoView();", row)
             if len(columns) >= 3:
@@ -107,12 +111,14 @@ def scraper():
                 backArrow.click()
         sub_headers = []
         sub_df = pd.DataFrame(data=all_rows,
-                              columns=['Debtor', 'Posted Date', 'Check Date', 'Check Number' , 'INV #', 'PO#', 'INV', 'DATE', 'AMOUNT', 'BALANCE', 'PAYMENT', 'ESCROW', 'FEE', 'DAYS',
-                       'FEE', 'EARNED'].extend(sub_headers))
+                              columns=['Debtor', 'Posted Date', 'Check Date', 'Check Number' , 'INV#', 'PO#', 'INV DATE', 'AMOUNT', 'BALANCE', 'PAYMENT', 'ESCROW', 'FEE DAYS',
+                       'FEE EARNED',"Explanation Code","Description"])
         df = pd.concat([df, sub_df])
         time.sleep(long_wait)
         nextBtn = driver.find_element(By.LINK_TEXT, "Next")
         if "disabled" in nextBtn.get_attribute("class"):
+            break
+        if set_disabled == True:
             break
         nextBtn.click()
     time.sleep(medium_wait)
@@ -185,3 +191,6 @@ def scraper():
     }
     zipped_data = convert_scraping_results_to_zip(data)
     return zipped_data
+
+if __name__ == "__main__":
+    scraper()

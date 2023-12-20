@@ -4,6 +4,7 @@ from fastapi import FastAPI
 from fastapi.responses import StreamingResponse
 from fexa.scraper import scraper
 from altline.scraper import scraper as altline_scraper
+from w9_checker.main import lambda_handler
 
 app = FastAPI()
 
@@ -25,6 +26,11 @@ async def altline():
         media_type="application/x-zip-compressed",
         headers = { "Content-Disposition": f"attachment; filename=Altline_data_{datetime.datetime.utcnow()}.zip"}
     )
+
+@app.get("/w9_checker")
+async def w9_checker(names: str):
+    files = lambda_handler(names)
+    return files
 
 
 if __name__ == "__main__":
