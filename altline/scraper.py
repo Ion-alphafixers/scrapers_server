@@ -91,6 +91,7 @@ def scraper():
                 driver.find_element(By.XPATH,
                                     f'/html/body/app/div[2]/div[3]/div[6]/div[1]/div[2]/section/div/div/table/tbody/tr[{index - 1}]/td[5]/button').click()
                 while True:
+
                     time.sleep(medium_wait)
                     sub_table = driver.find_element(By.ID, "pmtDetails")
                     sub_rows = sub_table.find_elements(By.TAG_NAME, ("tr"))
